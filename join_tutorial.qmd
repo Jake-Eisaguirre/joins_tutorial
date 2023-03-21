@@ -1,0 +1,232 @@
+---
+title: "`Join` Statements"
+author: "Jake Eisaguirre"
+format:
+  pdf: 
+    toc: true
+header-includes: 
+ - \usepackage{indentfirst}
+ - \usepackage{graphicx}
+ - \usepackage{fancyhdr}
+ - \pagestyle{fancy}
+ - \renewcommand{\headrulewidth}{0.3pt}
+ - \renewcommand{\footrulewidth}{0.3pt}
+---
+
+```{=tex}
+\thispagestyle{fancy}
+\fancyhead[HR]{\includegraphics[width=1.75cm]{nsf_logo.png}}
+\fancyhead[HL]{\includegraphics[width=2cm]{ribbitr.png}}
+\setlength{\headheight}{45pt}
+\setlength{\footheight}{45pt}
+```
+\newpage
+
+# **Introduction**
+
+When working with datasets, it is often necessary to combine them to gain a better understanding of the data. Joining is a common technique that merges two or more tables based on a common variable. In this tutorial, we will focus on three types of joins: left join, inner join, and full join.
+
+# **Left Join**
+
+A left join (or left outer join) returns all the rows from the left table and the matching rows from the right table. If there is no match in the right table, the resulting table will contain null values. The left table is the first table in the join statement.
+
+## **Example**
+
+Suppose we have two datasets, one with information about cities and another with information about the pollution levels in those cities. We can use a left join to merge the two datasets based on the city name.
+
+```{r}
+#| results: false
+#| message: false
+# Load libraries
+library(dplyr)
+library(kableExtra)
+library(tidyverse)
+```
+
+```{r}
+# Create data frame
+city <- data.frame(
+  city_name = c("New York", "Los Angeles", "Chicago", "Houston", "Phoenix"),
+  state = c("NY", "CA", "IL", "TX", "AZ")
+) 
+```
+
+```{r}
+#| echo: false 
+kable(city) %>% 
+  kable_classic()%>% 
+  kable_styling(latex_options = c("HOLD_position"))
+```
+
+```{r}
+# Create data frame
+pollution <- data.frame(
+  city_name = c("New York", "Los Angeles", "Houston"),
+  pollution_level = c(8, 6, 9)
+)
+
+```
+
+```{r}
+#| echo: false
+kable(pollution) %>% 
+  kable_classic() %>% 
+  kable_styling(latex_options = c("HOLD_position"))
+```
+
+```{r}
+# Perform left join
+lj_ex <- left_join(city, pollution, by = "city_name")
+
+```
+
+```{r}
+#| echo: false 
+kable(lj_ex) %>% 
+  kable_classic()%>% 
+  kable_styling(latex_options = c("HOLD_position"))
+```
+
+The resulting table will contain all the rows from the city dataset and only the matching rows from the pollution dataset. For example, the row for Chicago will have a null value for pollution level since there is no match in the pollution dataset.
+
+\newpage
+
+## **Venn Diagram**
+
+The left join can be visualized using a Venn diagram as follows:
+
+![left_join](images/left_join.png){width="400"}
+
+The resulting Venn diagram shows that all the rows from the City dataset (x) are included in the resulting table, but only the matching rows from the Pollution dataset (y) are included.
+
+\newpage
+
+# **Inner Join**
+
+An inner join (or equi-join) returns only the rows that have matching values in both tables. The resulting table contains only the common values in both tables.
+
+## **Example**
+
+Using the same datasets as in the left join example, we can perform an inner join to merge the two datasets based on the city name.
+
+```{r}
+# Create data frame
+city <- data.frame(
+  city_name = c("New York", "Los Angeles", "Chicago", "Houston", "Phoenix"),
+  state = c("NY", "CA", "IL", "TX", "AZ")
+)
+
+```
+
+```{r}
+#| echo: false
+kable(city) %>% 
+  kable_classic()%>% 
+  kable_styling(latex_options = c("HOLD_position"))
+```
+
+```{r}
+# Create data frame
+pollution <- data.frame(
+  city_name = c("New York", "Los Angeles", "Houston"),
+  pollution_level = c(8, 6, 9)
+)
+
+```
+
+```{r}
+#| echo: false
+kable(pollution) %>% 
+  kable_classic()%>% 
+  kable_styling(latex_options = c("HOLD_position"))
+```
+
+\newpage
+
+```{r}
+# Perform inner join
+ij_ex <- inner_join(city, pollution, by = "city_name") 
+```
+
+The resulting table will contain all matching rows from the city dataset and all matching rows from the pollution dataset. Inner joins will have no null values.
+
+```{r}
+#| echo: false
+
+kable(ij_ex) %>% 
+  kable_classic()%>% 
+  kable_styling(latex_options = c("HOLD_position"))
+```
+
+## **Venn Diagram**
+
+The inner join can be visualized using a Venn diagram as follows:
+
+![inner_join](images/inner_join.png){width="400"}
+
+The resulting Venn diagram shows that only the common values in both datasets are included in the resulting table.
+
+\newpage
+
+# **Full Join**
+
+A full join (or full outer join) returns all the rows from both tables, including the rows that have no matching values in the other table. If there is no match in one of the tables, the resulting table will contain null values.
+
+## **Example**
+
+Using the same datasets as in the left join and inner join examples, we can perform a full join to merge the two datasets based on the city name.
+
+```{r}
+
+# Create data frame
+city <- data.frame(
+  city_name = c("New York", "Los Angeles", "Chicago", "Houston", "Phoenix"),
+  state = c("NY", "CA", "IL", "TX", "AZ")
+)
+```
+
+```{r}
+#| echo: false
+kable(city) %>% 
+  kable_classic()%>% 
+  kable_styling(latex_options = c("HOLD_position"))
+```
+
+```{r}
+# Create data frame
+pollution <- data.frame(
+  city_name = c("New York", "Los Angeles", "Houston", "Tampa"),
+  pollution_level = c(8, 6, 9, 4)
+)
+```
+
+```{r}
+#| echo: false
+kable(pollution) %>% 
+  kable_classic()%>% 
+  kable_styling(latex_options = c("HOLD_position"))
+```
+
+\newpage
+
+```{r}
+# Perform full join
+fj_ex <- full_join(city, pollution, by = c("city_name"))
+```
+
+```{r}
+#| echo: false
+kable(fj_ex) %>% 
+  kable_classic()%>% 
+  kable_styling(latex_options = c("HOLD_position"))
+```
+
+The resulting table will contain all the rows from both datasets. If there is no match in either dataset, the corresponding columns will have null values.
+
+## **Venn Diagram**
+
+The full join can be visualized using a Venn diagram as follows:
+
+![full_join](images/full_join.png){width="400"}
+
+The resulting Venn diagram shows that all the rows from both datasets are included in the resulting table, with null values for any non-matching rows.
